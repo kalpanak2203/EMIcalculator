@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
+import jsPDF from 'jspdf';  
 
 const lightTheme = {
   background: '#f9f9f9',
@@ -68,9 +69,20 @@ const ThemeToggleButton = styled.button`
   font-size: 1rem;
 `;
 
+const ActionButton = styled.button`
+  margin: 10px;
+  padding: 10px 20px;
+  background: ${({ theme }) => theme.buttonBackground};
+  color: ${({ theme }) => theme.buttonColor};
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+`;
+
 const EMICalculator = () => {
   const [principal, setPrincipal] = useState(50000);
-  const [downPayment, setDownPayment] = useState(0); 
+  const [downPayment, setDownPayment] = useState(0);
   const [interestRate, setInterestRate] = useState(6);
   const [years, setYears] = useState(2);
   const [theme, setTheme] = useState(lightTheme); // State to handle theme
@@ -86,10 +98,27 @@ const EMICalculator = () => {
   };
 
   const netLoanAmount = principal - downPayment;
-
   const emi = calculateEMI(netLoanAmount, interestRate, years).toFixed(2);
   const totalAmountPayable = (emi * years * 12).toFixed(2);
   const netInterestPayable = (totalAmountPayable - netLoanAmount).toFixed(2);
+
+  const handleSavePDF = () => {
+    const doc = new jsPDF();
+    doc.text(`EMI Breakdown`, 10, 10);
+    doc.text(`Total Loan Amount: ₹${principal}`, 10, 20);
+    doc.text(`Down Payment: ₹${downPayment}`, 10, 30);
+    doc.text(`Interest Rate: ${interestRate}%`, 10, 40);
+    doc.text(`Tenure (Years): ${years}`, 10, 50);
+    doc.text(`EMI: ₹${emi}/month`, 10, 60);
+    doc.text(`Total Amount Payable: ₹${totalAmountPayable}`, 10, 70);
+    doc.text(`Net Interest Payable: ₹${netInterestPayable}`, 10, 80);
+    doc.text(`Net Loan Amount: ₹${netLoanAmount}`, 10, 90);
+    doc.save('EMI_Breakdown.pdf');
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -146,6 +175,11 @@ const EMICalculator = () => {
           <p><strong>Net Interest Payable:</strong> ₹{netInterestPayable}</p>
           <p><strong>Net Loan Amount:</strong> ₹{netLoanAmount}</p>
         </ResultWrapper>
+
+        <div>
+          <ActionButton onClick={handleSavePDF}>Save as PDF</ActionButton>
+          <ActionButton onClick={handlePrint}>Print</ActionButton>
+        </div>
       </CalculatorWrapper>
     </ThemeProvider>
   );
