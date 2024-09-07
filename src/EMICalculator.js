@@ -35,8 +35,9 @@ const ResultWrapper = styled.div`
   padding: 20px;
   background: #4caf50;
   color: #fff;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   border-radius: 5px;
+  text-align: left;
 `;
 
 const EMICalculator = () => {
@@ -51,6 +52,10 @@ const EMICalculator = () => {
   };
 
   const emi = calculateEMI(principal, interestRate, years).toFixed(2);
+
+  // New Calculations for Total Amount Payable and Net Interest Payable
+  const totalAmountPayable = (emi * years * 12).toFixed(2);
+  const netInterestPayable = (totalAmountPayable - principal).toFixed(2);
 
   return (
     <CalculatorWrapper>
@@ -87,7 +92,9 @@ const EMICalculator = () => {
       </InputWrapper>
 
       <ResultWrapper>
-        EMI: ₹{emi}/month
+        <p><strong>EMI:</strong> ₹{emi}/month</p>
+        <p><strong>Total Amount Payable:</strong> ₹{totalAmountPayable}</p>
+        <p><strong>Net Interest Payable:</strong> ₹{netInterestPayable}</p>
       </ResultWrapper>
     </CalculatorWrapper>
   );
