@@ -41,9 +41,10 @@ const ResultWrapper = styled.div`
 `;
 
 const EMICalculator = () => {
-  const [principal, setPrincipal] = useState(100000);
-  const [interestRate, setInterestRate] = useState(8);
-  const [years, setYears] = useState(5);
+  const [principal, setPrincipal] = useState(50000);
+  const [downPayment, setDownPayment] = useState(0); 
+  const [interestRate, setInterestRate] = useState(6);
+  const [years, setYears] = useState(2);
 
   const calculateEMI = (principal, rate, years) => {
     const monthlyRate = rate / (12 * 100);
@@ -51,23 +52,33 @@ const EMICalculator = () => {
     return (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
   };
 
-  const emi = calculateEMI(principal, interestRate, years).toFixed(2);
+  const netLoanAmount = principal - downPayment;
 
-  // New Calculations for Total Amount Payable and Net Interest Payable
+  const emi = calculateEMI(netLoanAmount, interestRate, years).toFixed(2);
   const totalAmountPayable = (emi * years * 12).toFixed(2);
-  const netInterestPayable = (totalAmountPayable - principal).toFixed(2);
+  const netInterestPayable = (totalAmountPayable - netLoanAmount).toFixed(2);
 
   return (
     <CalculatorWrapper>
       <Heading>EMI Calculator</Heading>
 
       <InputWrapper>
-        <Label>Loan Amount (Principal): ₹{principal}</Label>
+        <Label>Total Loan Amount: ₹{principal}</Label>
         <Slider
-          max={5000000}
+          max={70000000}
           min={50000}
           value={principal}
           onChange={value => setPrincipal(value)}
+        />
+      </InputWrapper>
+
+      <InputWrapper>
+        <Label>Down Payment: ₹{downPayment}</Label>
+        <Slider
+          max={principal - 50000}
+          min={0}
+          value={downPayment}
+          onChange={value => setDownPayment(value)}
         />
       </InputWrapper>
 
@@ -95,6 +106,7 @@ const EMICalculator = () => {
         <p><strong>EMI:</strong> ₹{emi}/month</p>
         <p><strong>Total Amount Payable:</strong> ₹{totalAmountPayable}</p>
         <p><strong>Net Interest Payable:</strong> ₹{netInterestPayable}</p>
+        <p><strong>Net Loan Amount:</strong> ₹{netLoanAmount}</p>
       </ResultWrapper>
     </CalculatorWrapper>
   );
