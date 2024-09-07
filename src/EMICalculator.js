@@ -2,22 +2,29 @@ import React, { useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import jsPDF from 'jspdf';  
+import jsPDF from 'jspdf';
 
+// Define light and dark themes with transitions
 const lightTheme = {
-  background: '#f9f9f9',
+  background: 'linear-gradient(135deg, #f9f9f9, #e1e1e1)',
   color: '#333',
   resultBackground: '#4caf50',
   buttonBackground: '#333',
-  buttonColor: '#fff'
+  buttonColor: '#fff',
+  sliderTrackColor: '#ddd',
+  sliderHandleColor: '#4caf50',
+  transition: 'background 0.3s ease, color 0.3s ease',
 };
 
 const darkTheme = {
-  background: '#333',
+  background: 'linear-gradient(135deg, #333, #555)',
   color: '#f9f9f9',
   resultBackground: '#1b5e20',
   buttonBackground: '#f9f9f9',
-  buttonColor: '#333'
+  buttonColor: '#333',
+  sliderTrackColor: '#666',
+  sliderHandleColor: '#1b5e20',
+  transition: 'background 0.3s ease, color 0.3s ease',
 };
 
 const CalculatorWrapper = styled.div`
@@ -26,15 +33,20 @@ const CalculatorWrapper = styled.div`
   padding: 20px;
   background: ${({ theme }) => theme.background};
   color: ${({ theme }) => theme.color};
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   text-align: center;
+  font-family: 'Arial', sans-serif;
+  transition: ${({ theme }) => theme.transition};
 `;
 
 const Heading = styled.h2`
   color: ${({ theme }) => theme.color};
-  font-size: 2rem;
+  font-size: 2.5rem;
   margin-bottom: 20px;
+  font-weight: 600;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  transition: ${({ theme }) => theme.transition};
 `;
 
 const InputWrapper = styled.div`
@@ -43,9 +55,32 @@ const InputWrapper = styled.div`
 
 const Label = styled.label`
   display: block;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   color: ${({ theme }) => theme.color};
   margin-bottom: 10px;
+  transition: ${({ theme }) => theme.transition};
+`;
+
+const SliderWrapper = styled.div`
+  margin: 20px 0;
+`;
+
+const StyledSlider = styled(Slider)`
+  .rc-slider-track {
+    background-color: ${({ theme }) => theme.sliderTrackColor};
+    transition: background-color 0.3s ease;
+  }
+
+  .rc-slider-handle {
+    border: 2px solid ${({ theme }) => theme.sliderHandleColor};
+    background-color: ${({ theme }) => theme.sliderHandleColor};
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  .rc-slider-rail {
+    background-color: ${({ theme }) => theme.sliderTrackColor};
+  }
 `;
 
 const ResultWrapper = styled.div`
@@ -54,8 +89,11 @@ const ResultWrapper = styled.div`
   background: ${({ theme }) => theme.resultBackground};
   color: #fff;
   font-size: 1.2rem;
-  border-radius: 5px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   text-align: left;
+  font-weight: 500;
+  transition: ${({ theme }) => theme.transition};
 `;
 
 const ThemeToggleButton = styled.button`
@@ -67,6 +105,13 @@ const ThemeToggleButton = styled.button`
   border-radius: 5px;
   cursor: pointer;
   font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.3s ease, color 0.3s ease;
+
+  &:hover {
+    background: ${({ theme }) => theme.buttonColor};
+    color: ${({ theme }) => theme.buttonBackground};
+  }
 `;
 
 const ActionButton = styled.button`
@@ -78,6 +123,13 @@ const ActionButton = styled.button`
   border-radius: 5px;
   cursor: pointer;
   font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.3s ease, color 0.3s ease;
+
+  &:hover {
+    background: ${({ theme }) => theme.buttonColor};
+    color: ${({ theme }) => theme.buttonBackground};
+  }
 `;
 
 const EMICalculator = () => {
@@ -131,7 +183,7 @@ const EMICalculator = () => {
 
         <InputWrapper>
           <Label>Total Loan Amount: ₹{principal}</Label>
-          <Slider
+          <StyledSlider
             max={70000000}
             min={50000}
             value={principal}
@@ -141,7 +193,7 @@ const EMICalculator = () => {
 
         <InputWrapper>
           <Label>Down Payment: ₹{downPayment}</Label>
-          <Slider
+          <StyledSlider
             max={principal - 50000}
             min={0}
             value={downPayment}
@@ -151,7 +203,7 @@ const EMICalculator = () => {
 
         <InputWrapper>
           <Label>Interest Rate (%): {interestRate}%</Label>
-          <Slider
+          <StyledSlider
             max={15}
             min={1}
             value={interestRate}
@@ -161,7 +213,7 @@ const EMICalculator = () => {
 
         <InputWrapper>
           <Label>Tenure (Years): {years}</Label>
-          <Slider
+          <StyledSlider
             max={30}
             min={1}
             value={years}
